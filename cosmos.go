@@ -12,8 +12,6 @@ import (
 )
 
 func startCosmos(writeOutput func(msg string)) error {
-	endpoint := os.Getenv("AZURE_COSMOS_DB_NOSQL_ENDPOINT")
-	log.Println("ENDPOINT:", endpoint)
 
 	const connectionString = "<azure-cosmos-db-nosql-connection-string>"
 
@@ -25,26 +23,24 @@ func startCosmos(writeOutput func(msg string)) error {
 	if err != nil {
 		return err
 	}
+
 	writeOutput("Current Status:\tStarting...")
 
-	// <get_database>
 	database, err := client.NewDatabase("cosmicworks")
 	if err != nil {
 		return err
 	}
-	// </get_database>
+
 	writeOutput(fmt.Sprintf("Get database:\t%s", database.ID()))
 
-	// <get_container>
 	container, err := database.NewContainer("products")
 	if err != nil {
 		return err
 	}
-	// </get_container>
+
 	writeOutput(fmt.Sprintf("Get container:\t%s", container.ID()))
 
 	{
-		// <create_item>
 		item := Item {
 			Id:			"70b63682-b93a-4c77-aad2-65501347265f",
 			Category:	"gear-surf-surfboards",
@@ -67,7 +63,7 @@ func startCosmos(writeOutput func(msg string)) error {
 		if err != nil {
 			return err
 		}
-		// </create_item>	
+
 		if response.RawResponse.StatusCode == 200 || response.RawResponse.StatusCode == 201 {
 			created_item := Item{}
 			err := json.Unmarshal(response.Value, &created_item)
@@ -118,7 +114,6 @@ func startCosmos(writeOutput func(msg string)) error {
 	}
 
 	{
-		// <read_item>
 		partitionKey := azcosmos.NewPartitionKeyString("gear-surf-surfboards")
 
 		context := context.TODO()
@@ -136,7 +131,7 @@ func startCosmos(writeOutput func(msg string)) error {
 			if err != nil {
 				return err
 			}
-			// </read_item>
+
 			writeOutput(fmt.Sprintf("Read item id:\t%s", read_item.Id))
 			writeOutput(fmt.Sprintf("Read item:\t%v", read_item))
 		}
@@ -146,7 +141,6 @@ func startCosmos(writeOutput func(msg string)) error {
 	}
 
 	{
-		// <query_items>
 		partitionKey := azcosmos.NewPartitionKeyString("gear-surf-surfboards")
 
 		query := "SELECT * FROM products p WHERE p.category = @category"
@@ -158,9 +152,7 @@ func startCosmos(writeOutput func(msg string)) error {
 		}
 
 		pager := container.NewQueryItemsPager(query, partitionKey, &queryOptions)
-		// </query_items>
 
-		// <parse_results>
 		context := context.TODO()
 
 		items := []Item{}
@@ -184,7 +176,6 @@ func startCosmos(writeOutput func(msg string)) error {
 				items = append(items, item)
 			}
 		}
-		// </parse_results>
 
 		for _, item := range items {
 			writeOutput(fmt.Sprintf("Found item:\t%s\t%s", item.Name, item.Id))
