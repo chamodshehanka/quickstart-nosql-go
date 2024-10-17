@@ -60,7 +60,7 @@ jobs:
       - name: Remove unnecessary import libraries
         working-directory: target
         run: |
-          sed -e 's/^\s*"github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity"//g' -e 's/^\s*"log"//g' -e 's/^\s*"os"//g' cosmos.go > cosmos_modified.go
+          sed -e 's/^\s*"github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity"//g' -e 's/^\s*"log"//g' -e 's/^\s*"os"//g' cosmos.go > cosmos.tmp.go && mv cosmos.tmp.go cosmos.go
       - name: Add changes to git
         working-directory: target
         run: |
