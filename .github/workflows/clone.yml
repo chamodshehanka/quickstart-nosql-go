@@ -60,7 +60,7 @@ jobs:
       - name: Change import libraries
         working-directory: target
         run: |
-          	awk '!/log/ && !/os/ && !/github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity/' cosmos.go > cosmos.tmp.go && mv cosmos.tmp.go cosmos.go
+          awk '!/log/ && !/os/ && !/github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity/' cosmos.go > cosmos.tmp.go && mv cosmos.tmp.go cosmos.go
       - name: Add changes to git
         working-directory: target
         run: |
