@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+
+
+
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 )
 
@@ -19,7 +19,7 @@ func startCosmos(writeOutput func(msg string)) error {
 		EnableContentResponseOnWrite: true,
 	}
 	
-	client, err := azcosmos.NewClientFromConnectionString(connectionString, nil)
+	client, err := azcosmos.NewClientFromConnectionString(connectionString, &clientOptions)
 	if err != nil {
 		return err
 	}
