@@ -4,7 +4,7 @@
 		EnableContentResponseOnWrite: true,
 	}
 	
-	client, err := azcosmos.NewClientFromConnectionString(connectionString, nil)
+	client, err := azcosmos.NewClientFromConnectionString(connectionString, &clientOptions)
 	if err != nil {
 		return err
 	}
