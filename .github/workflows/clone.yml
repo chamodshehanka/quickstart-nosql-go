@@ -57,10 +57,10 @@ jobs:
           /^\s*\/\/ <\/create_client>/ { in_block = 0; next }
           !in_block { print }
           ' cosmos.go > cosmos.tmp.go && mv cosmos.tmp.go cosmos.go
-      - name: Change import libraries
+      - name: Remove unnecessary import libraries
         working-directory: target
         run: |
-          awk '!/log/ && !/os/ && !/github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity/' cosmos.go > cosmos.tmp.go && mv cosmos.tmp.go cosmos.go
+          sed -e 's/^\s*"github.com\/Azure\/azure-sdk-for-go\/sdk\/azidentity"//g' -e 's/^\s*"log"//g' -e 's/^\s*"os"//g' cosmos.go > cosmos_modified.go
       - name: Add changes to git
         working-directory: target
         run: |
