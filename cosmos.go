@@ -7,11 +7,18 @@ import (
 
 
 
+	"github.com/joho/godotenv"
+
 
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 )
 
 func startCosmos(writeOutput func(msg string)) error {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, proceeding without it")
+	}
 
 	const connectionString = "<azure-cosmos-db-nosql-connection-string>"
 
@@ -26,14 +33,24 @@ func startCosmos(writeOutput func(msg string)) error {
 
 	writeOutput("Current Status:\tStarting...")
 
-	database, err := client.NewDatabase("cosmicworks")
+	databaseName, found := os.LookupEnv("CONFIGURATION__AZURECOSMOSDB__DATABASENAME")
+	if !found {
+		databaseName = "cosmicworks"
+	}
+
+	database, err := client.NewDatabase(databaseName)
 	if err != nil {
 		return err
 	}
 
 	writeOutput(fmt.Sprintf("Get database:\t%s", database.ID()))
 
-	container, err := database.NewContainer("products")
+	containerName, found := os.LookupEnv("CONFIGURATION__AZURECOSMOSDB__CONTAINERNAME")
+	if !found {
+		containerName = "products"
+	}
+
+	container, err := database.NewContainer(containerName)
 	if err != nil {
 		return err
 	}
@@ -41,13 +58,13 @@ func startCosmos(writeOutput func(msg string)) error {
 	writeOutput(fmt.Sprintf("Get container:\t%s", container.ID()))
 
 	{
-		item := Item {
-			Id:			"70b63682-b93a-4c77-aad2-65501347265f",
-			Category:	"gear-surf-surfboards",
-			Name:		"Yamba Surfboard",
-			Quantity:	12,
-			Price:		850.00,
-			Clearance:	false,
+		item := Item{
+			Id:        "70b63682-b93a-4c77-aad2-65501347265f",
+			Category:  "gear-surf-surfboards",
+			Name:      "Yamba Surfboard",
+			Quantity:  12,
+			Price:     850.00,
+			Clearance: false,
 		}
 
 		partitionKey := azcosmos.NewPartitionKeyString("gear-surf-surfboards")
@@ -77,13 +94,13 @@ func startCosmos(writeOutput func(msg string)) error {
 	}
 
 	{
-		item := Item {
-			Id:			"25a68543-b90c-439d-8332-7ef41e06a0e0",
-			Category:	"gear-surf-surfboards",
-			Name:		"Kiama Classic Surfboard",
-			Quantity:	25,
-			Price:		790.00,
-			Clearance:	true,
+		item := Item{
+			Id:        "25a68543-b90c-439d-8332-7ef41e06a0e0",
+			Category:  "gear-surf-surfboards",
+			Name:      "Kiama Classic Surfboard",
+			Quantity:  25,
+			Price:     790.00,
+			Clearance: true,
 		}
 
 		partitionKey := azcosmos.NewPartitionKeyString("gear-surf-surfboards")
@@ -110,7 +127,7 @@ func startCosmos(writeOutput func(msg string)) error {
 		}
 		writeOutput(fmt.Sprintf("Status code:\t%d", response.RawResponse.StatusCode))
 		writeOutput(fmt.Sprintf("Request charge:\t%.2f", response.RequestCharge))
-	
+
 	}
 
 	{
